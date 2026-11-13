@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Власний продукт проти фейків</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desk:#E8E4DB; --card:#FFFFFF; --ink:#1B2330; --muted:#5E6675; --line:#D9D3C6; --soft:#F3F0E8;
+  --accent:#1D3F8F; --accent-ink:#FFFFFF; --stamp:#B3261E; --mark:#FFE58A; --mark-ink:#1B2330;
+  --ok:#1E7A45; --ok-bg:#E3F4EA; --bad:#B42318; --bad-bg:#FDECEA;
+  --paper:#FFFFFF; --paper-ink:#1B1B1B; --paper-line:#CFC8B8; --paper-soft:#F1EEE6;
+  --font:"Onest","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"PT Serif",Georgia,"Times New Roman",serif;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#14171C; --card:#1C2027; --ink:#E8EBF0; --muted:#9AA3B2; --line:#2C323D; --soft:#232832;
+    --accent:#8FB0FF; --accent-ink:#0D1424; --stamp:#F0786F; --mark:#4B4420; --mark-ink:#F3EBC0;
+    --ok:#5BC489; --ok-bg:#153222; --bad:#F08A80; --bad-bg:#3A1B19; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#14171C; --card:#1C2027; --ink:#E8EBF0; --muted:#9AA3B2; --line:#2C323D; --soft:#232832;
+  --accent:#8FB0FF; --accent-ink:#0D1424; --stamp:#F0786F; --mark:#4B4420; --mark-ink:#F3EBC0;
+  --ok:#5BC489; --ok-bg:#153222; --bad:#F08A80; --bad-bg:#3A1B19; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--desk);color:var(--ink);font:400 16px/1.6 var(--font);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--card)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.scroll{overflow-x:auto}
+
+/* ---------- header ---------- */
+.top{padding:26px 0 22px}
+.top-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:center}
+@media (max-width:860px){.top-grid{grid-template-columns:1fr}}
+.stamp-eyebrow{display:inline-block;border:2px solid var(--stamp);color:var(--stamp);padding:3px 12px;border-radius:4px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;transform:rotate(-2deg);margin-bottom:14px}
+.top h1{margin:0 0 10px;font-size:clamp(40px,6.4vw,72px);line-height:1;font-weight:700;letter-spacing:-.025em}
+.top .sub{margin:0 0 18px;font-size:19px;color:var(--muted);max-width:36ch}
+.who{max-width:360px}
+.who label{display:block;font-size:14px;color:var(--muted);margin-bottom:4px}
+.who input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.saved-note{font-size:13px;color:var(--muted);margin:6px 0 0}
+.storewarn{display:none;background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad);border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.storewarn.on{display:block}
+.illus{width:100%;max-width:470px;justify-self:center}
+.illus svg{width:100%;height:auto;display:block}
+.il-card{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.il-bar{fill:var(--line)}
+.il-acc{fill:var(--accent)}
+.il-field{fill:none;stroke:var(--line);stroke-width:2}
+.il-paper{fill:#fff;stroke:#cfc8b8;stroke-width:1.5}
+.il-pbar{fill:#d5d8de}
+.il-pdark{fill:#2a2f38}
+.il-pgrp{fill:#efeadf}
+.il-stamp{fill:none;stroke:var(--stamp);stroke-width:3}
+.il-stamptxt{fill:var(--stamp);font:700 14px var(--font);letter-spacing:.08em}
+
+/* ---------- tabs ---------- */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs .wrap::-webkit-scrollbar{display:none}
+nav.tabs a{padding:14px 16px;text-decoration:none;color:var(--muted);font-weight:600;white-space:nowrap;border-bottom:3px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+main{padding:28px 0 70px}
+section.view{display:none}
+section.view.on{display:block}
+
+/* ---------- prose ---------- */
+.prose{max-width:76ch}
+.prose h2{font-size:26px;line-height:1.2;margin:38px 0 10px}
+.prose h2:first-child{margin-top:0}
+.prose h3{font-size:19px;margin:24px 0 6px}
+.prose p,.prose li{margin:0 0 10px}
+.lead{font-size:18px;color:var(--muted)}
+table.plain{border-collapse:collapse;width:100%;margin:8px 0 18px;font-size:15px;background:var(--card)}
+table.plain th,table.plain td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+table.plain th{background:var(--soft);font-weight:600}
+.callout{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:6px;padding:12px 16px;margin:8px 0 18px}
+.route{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0 8px;counter-reset:r}
+@media (max-width:900px){.route{grid-template-columns:1fr 1fr}}
+.route a{counter-increment:r;position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:34px 12px 12px;text-decoration:none;color:var(--ink);font-weight:600;font-size:15px;line-height:1.35}
+.route a::before{content:counter(r);position:absolute;left:12px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:13px;display:flex;align-items:center;justify-content:center}
+.route a small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.schema{width:100%;max-width:720px;height:auto;display:block;margin:6px 0 18px}
+
+/* ---------- builder layout ---------- */
+.builder{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:980px){.builder{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px}
+.pad{padding:16px}
+.panel h2{font-size:17px;margin:0 0 8px}
+.ws{display:flex;flex-direction:column;gap:18px;min-width:0}
+.tasks{padding:16px;position:relative}
+.tnums{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tnums button{min-width:38px;height:38px;padding:0 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);font-weight:700;cursor:pointer}
+.tnums button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tnums button.done{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.tnums button.bonus{border-style:dashed}
+.task h3{margin:0 0 4px;font-size:18px;line-height:1.3;padding-right:4px}
+.task .meta{font-size:13px;color:var(--muted);margin:0 0 8px}
+.task p{margin:0 0 12px}
+.counter{font-weight:600;background:var(--soft);border-radius:6px;padding:7px 10px;margin:0 0 12px;font-size:15px}
+details.hint summary{cursor:pointer;color:var(--accent);font-weight:600;margin-bottom:6px}
+details.hint p{font-size:15px;background:var(--soft);padding:10px 12px;border-radius:8px}
+.stamp-row{margin:0 0 10px}
+.stamp-done{display:inline-block;border:3px double var(--stamp);color:var(--stamp);padding:2px 12px;border-radius:4px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;transform:rotate(-3deg);opacity:.92}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:8px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:6px 11px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.feedback{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:15px;display:none}
+.feedback.ok{display:block;background:var(--ok-bg);color:var(--ok)}
+.feedback.bad{display:block;background:var(--bad-bg);color:var(--bad)}
+.howto{padding:12px 16px}
+.howto summary{cursor:pointer;font-weight:600}
+.howto ol{margin:10px 0 0;padding-left:0;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;counter-reset:h}
+@media (max-width:900px){.howto ol{grid-template-columns:1fr 1fr}}
+.howto li{counter-increment:h;position:relative;background:var(--soft);border-radius:8px;padding:30px 10px 10px;font-size:14px;line-height:1.4}
+.howto li::before{content:counter(h);position:absolute;left:10px;top:6px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--soft)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+.empty{color:var(--muted);padding:6px 0}
+
+
+/* ---------- lesson 19 additions ---------- */
+.stepno{font-size:14px;font-weight:600;color:var(--muted);margin:0 0 6px}
+.route.r4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.route.r4{grid-template-columns:1fr 1fr}}
+.il-mark{fill:var(--mark)}
+.il-lens{fill:none;stroke:var(--accent);stroke-width:9}
+.il-handle{stroke:var(--accent);stroke-width:14;stroke-linecap:round}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0 18px}
+@media (max-width:760px){.modes{grid-template-columns:1fr}}
+.mode{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px 8px}
+.mode.free{border-top:5px solid var(--ok)}
+.mode.once{border-top:5px solid var(--stamp)}
+.mode h3{margin:0 0 6px;font-size:19px}
+.mode p{margin:0 0 10px}
+.next{margin:22px 0 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn.retry{margin-top:12px}
+.panel h3{margin:0}
+.pad h3{margin:0 0 6px}
+.sign-n{display:inline-block;min-width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:700;text-align:center;line-height:22px;margin-right:8px}
+ol.five{margin:8px 0 14px;padding-left:0;list-style:none;counter-reset:q;display:grid;gap:8px}
+ol.five li{counter-increment:q;position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px 10px 48px;margin:0}
+ol.five li::before{content:counter(q);position:absolute;left:12px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--stamp);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.stagecol{display:flex;flex-direction:column;gap:18px;min-width:0}
+/* message mock-ups */
+.msg{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.msg-top{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--soft)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted);flex:0 0 auto}
+.msg-from{font-weight:700;line-height:1.2}
+.msg-meta{font-size:13px;color:var(--muted)}
+.msg-body{padding:12px 14px}
+.msg-title{font-family:var(--serif);font-weight:700;font-size:19px;line-height:1.25;margin:0 0 6px}
+.msg-text{margin:0;white-space:pre-line}
+.bubble{background:var(--soft);border-radius:14px 14px 14px 4px;padding:10px 13px;display:inline-block;max-width:100%}
+.msg-link{display:block;margin-top:8px;color:var(--accent);text-decoration:underline;word-break:break-all}
+.msg-note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.msg.alert{border-left:6px solid var(--stamp)}
+.msg-img{margin-top:10px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.msg-img svg{display:block;width:100%;height:auto}
+.msg-comments{border-top:1px solid var(--line);padding:9px 14px;background:var(--soft);font-size:14px}
+.msg-comments p{margin:0 0 4px}
+.msg-comments p:last-child{margin:0}
+.ctl{padding:14px 16px;border-top:1px solid var(--line)}
+.ctl .lab{font-size:13px;color:var(--muted);margin:0 0 6px;font-weight:600}
+.ctl .chips{margin-bottom:14px}
+.verd{display:flex;gap:8px;flex-wrap:wrap}
+.verd button,.chk button{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+.verd button[aria-pressed="true"],.chk button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.mfb{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:15px}
+.mfb.ok{background:var(--ok-bg);color:var(--ok)}
+.mfb.bad{background:var(--bad-bg);color:var(--bad)}
+.mfb ul{margin:4px 0 0;padding-left:18px}
+.chk{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.facts{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.facts li{background:var(--soft);border-radius:8px;padding:9px 12px;font-size:15px}
+.facts b{display:block;font-size:13px;color:var(--muted);margin-bottom:2px}
+.sbx textarea,.rulebox textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);resize:vertical;min-height:90px}
+.risk{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--soft);font-weight:600}
+.memo{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--stamp);border-radius:10px;padding:14px 18px;max-width:640px}
+.memo h3{margin:0 0 6px}
+.memo ol{margin:6px 0 0;padding-left:22px}
+.memo li{margin:0 0 4px}
+ul.weak{margin:6px 0 0;padding-left:20px}
+ul.rules{margin:0 0 16px;padding-left:20px}
+ul.rules li{margin:0 0 7px}
+.tprog{font-weight:600;color:var(--muted);margin:0 0 8px}
+.progress{height:8px;background:var(--soft);border-radius:999px;overflow:hidden;margin:0 0 16px}
+.progress i{display:block;height:100%;background:var(--accent)}
+.tq{font-size:20px;font-weight:600;line-height:1.35;margin:0 0 16px;max-width:62ch}
+.topts{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
+.topts button{text-align:left;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer;font-size:16px;line-height:1.4}
+.topts button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.tact{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.testwarn{border-left:5px solid var(--bad)}
+.tdone .big{font-size:32px;font-weight:700;margin:4px 0 6px}
+.tdone .row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+#testbox{max-width:760px}
+.report{max-width:800px}
+.report .big{font-size:26px;font-weight:700;margin:6px 0 14px}
+.report .row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.report .st{font-weight:600}
+.report .st.ok{color:var(--ok)}
+.report h3{margin:22px 0 6px;font-size:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- lesson 21 additions ---------- */
+.stlist{padding:12px}
+.stlist h2{font-size:17px;margin:2px 4px 8px}
+.prog{height:8px;background:var(--soft);border-radius:999px;overflow:hidden;margin:6px 4px 12px}
+.prog i{display:block;height:100%;background:var(--ok)}
+.stbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 11px;margin:0 0 8px;cursor:pointer;line-height:1.25}
+.stbtn[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.stbtn .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--line);color:var(--ink);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.stbtn.done .n{background:var(--ok);color:#fff}
+.stbtn.bonus{border-style:dashed}
+.stbtn small{display:block;color:var(--muted);font-weight:400}
+.stagehead{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:14px 16px 0}
+.stagehead h3{font-size:20px;margin:0}
+.timerbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.timerbox .clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:18px;min-width:56px;text-align:center;background:var(--soft);border-radius:8px;padding:4px 8px}
+.timerbox .clock.over{background:var(--bad-bg);color:var(--bad)}
+.stagetxt{padding:6px 16px 4px}
+.stagetxt p{margin:0 0 8px}
+.subp{margin:0}
+.sect{margin:6px 16px 12px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;background:var(--card)}
+.sect h4{margin:0 0 6px;font-size:16px}
+.sect p{margin:0 0 8px}
+/* dice */
+.dice{display:grid;gap:8px;margin:8px 0}
+.die{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:center;background:var(--soft);border-radius:8px;padding:8px 10px}
+@media (max-width:560px){.die{grid-template-columns:1fr auto}.die .dl{grid-column:1/-1}}
+.die .dl{font-size:13px;color:var(--muted);font-weight:600}
+.die .dv{font-weight:700;min-height:22px}
+.die button{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px;cursor:pointer;font-weight:600;font-size:14px}
+.die button[aria-pressed="true"]{border-color:var(--accent);background:var(--card);box-shadow:inset 0 0 0 1px var(--accent)}
+.rolling .dv{opacity:.6}
+/* counters */
+.counter{font-size:13px;color:var(--muted);margin-top:4px}
+.counter.good{color:var(--ok)}
+.counter.warn{color:var(--bad)}
+/* formats */
+.fmtgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0 4px}
+@media (max-width:800px){.fmtgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.fmtgrid{grid-template-columns:1fr}}
+.fmt{text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;cursor:pointer;line-height:1.3}
+.fmt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.fmt b{display:block;margin-bottom:2px}
+.fmt span{display:block;font-size:13px;color:var(--muted)}
+.fmtinfo{margin-top:8px;padding:9px 12px;border-radius:8px;background:var(--soft);font-size:15px}
+.formats-view{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:10px 0 18px}
+@media (max-width:800px){.formats-view{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.formats-view{grid-template-columns:1fr}}
+.fcard{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:10px;padding:12px 14px}
+.fcard h3{margin:0 0 4px;font-size:17px}
+.fcard p{margin:0 0 6px;font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--soft);color:var(--muted)}
+/* check items */
+.items{display:grid;gap:6px;margin:2px 0}
+.items button{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;line-height:1.35}
+.items button .box{flex:0 0 20px;height:20px;border-radius:5px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;margin-top:1px}
+.items button[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-bg)}
+.items button[aria-pressed="true"] .box{background:var(--ok);border-color:var(--ok)}
+/* xray */
+.xray{margin:8px 16px 4px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.xhead{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 14px;background:var(--soft);font-weight:700;flex-wrap:wrap}
+.xhead span{font-size:20px}
+.xrow{display:flex;gap:10px;padding:8px 14px;border-top:1px solid var(--line);align-items:flex-start}
+.xrow .mk{flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;margin-top:1px}
+.xrow.pass .mk{background:var(--ok)}
+.xrow.fail .mk{background:var(--bad)}
+.xrow b{display:block;line-height:1.25}
+.xrow small{color:var(--muted);display:block}
+.xnote{padding:8px 14px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+/* audit */
+.audit{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.audit{grid-template-columns:1fr}}
+.poster{width:100%;max-width:340px;height:auto;display:block;border:1px solid var(--line);border-radius:6px;background:#fff}
+.poster .hot{fill:transparent;cursor:pointer}
+.poster .hot:focus{outline:none;stroke:var(--accent);stroke-width:3}
+.poster .hot.found{fill:rgba(31,122,77,.18);stroke:#1f7a4d;stroke-width:3}
+.poster .hot.shown{fill:rgba(180,35,24,.12);stroke:#b42318;stroke-width:2;stroke-dasharray:5 3}
+.flaws{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.flaws li{padding:8px 10px;border-radius:8px;background:var(--soft);font-size:15px}
+.flaws li.on{background:var(--ok-bg)}
+.flaws li b{display:block}
+.flaws li span{color:var(--muted)}
+.auditmsg,.auditcount{min-height:24px;font-weight:600;margin:0 0 8px}
+.sprint{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sprint .big10{font-size:44px;font-weight:700;min-width:70px;text-align:center;font-variant-numeric:tabular-nums}
+/* self-assessment */
+.rub{padding:14px 16px;border-bottom:1px solid var(--line)}
+.rub:last-child{border-bottom:0}
+.rub h4{margin:0 0 8px;font-size:17px}
+.rub .lv{display:grid;gap:8px}
+.rub .lv button{text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 12px;cursor:pointer;line-height:1.35}
+.rub .lv button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.rub .lv b{display:block}
+/* passport (paper) */
+.passport{background:#fff;color:#1f2430;border:1px solid #cfc8b8;border-radius:6px;padding:22px 26px;max-width:760px;box-shadow:0 2px 0 rgba(0,0,0,.04)}
+.passport h2{margin:0 0 2px;font-size:24px;color:#1f2430}
+.passport .by{color:#5b6270;margin:0 0 14px}
+.passport dl{margin:0;display:grid;grid-template-columns:170px 1fr;gap:8px 14px}
+@media (max-width:560px){.passport dl{grid-template-columns:1fr}.passport dt{margin-top:6px}}
+.passport dt{font-weight:700;color:#3b4250}
+.passport dd{margin:0;white-space:pre-line}
+.passport .empty{color:#8b8f98;font-style:italic}
+.passport .stampbox{display:inline-block;border:3px solid #b42318;color:#b42318;font-weight:700;letter-spacing:.08em;padding:2px 10px;border-radius:5px;transform:rotate(-4deg);margin-top:14px}
+.planlist{margin:0;padding-left:22px}
+.planlist li{margin:0 0 14px}
+.planlist label{display:block;font-weight:600;margin-bottom:4px}
+.planlist textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);resize:vertical}
+.tmini{width:100%;border-collapse:collapse;font-size:15px}
+.tmini th,.tmini td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+.tmini th{background:var(--soft)}
+@media print{body *{visibility:hidden}#passport,#passport *{visibility:visible}#passport{position:absolute;left:0;top:0;width:100%;box-shadow:none;border:0}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-grid">
+    <div>
+      <span class="stamp-eyebrow">Проєкт 4. Продукт</span>
+      <h1>Власний продукт проти фейків</h1>
+      <p class="sub">Створи в Canva матеріал, який допоможе іншим не потрапити на фейк.</p>
+      <div class="who">
+        <label for="who">Твоє прізвище та ім’я (потрібне для паспорта продукту)</label>
+        <input id="who" type="text" autocomplete="off" placeholder="Наприклад, Ковальчук Марія">
+        <p class="saved-note">Усе зберігається автоматично в цьому браузері.</p>
+      </div>
+    </div>
+    <div class="illus" aria-hidden="true">
+      <svg viewBox="0 0 470 280">
+        <g transform="rotate(-3 170 140)">
+          <rect class="il-card" x="14" y="24" width="300" height="214" rx="14"/>
+          <rect x="30" y="42" width="268" height="40" rx="8" fill="var(--accent)"/>
+          <rect x="44" y="57" width="150" height="10" rx="5" fill="var(--accent-ink)"/>
+          <rect class="il-bar" x="30" y="98" width="120" height="86" rx="8"/>
+          <path d="M90 108 l42 14 v28 c0 16 -18 26 -42 36 c-24 -10 -42 -20 -42 -36 v-28 z" fill="var(--ok)" opacity=".9"/>
+          <path d="M72 148 l14 14 l26 -28" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect class="il-bar" x="166" y="104" width="120" height="9" rx="4"/>
+          <rect class="il-bar" x="166" y="124" width="96" height="9" rx="4"/>
+          <rect class="il-bar" x="166" y="144" width="110" height="9" rx="4"/>
+          <rect x="166" y="170" width="112" height="26" rx="13" fill="var(--stamp)"/>
+          <rect x="30" y="204" width="60" height="8" rx="4" class="il-bar"/>
+        </g>
+        <g>
+          <circle cx="360" cy="196" r="12" fill="#e85d75"/><circle cx="392" cy="214" r="12" fill="#f2b705"/><circle cx="424" cy="192" r="12" fill="var(--accent)"/>
+          <path d="M340 140 l70 -50 l22 22 l-70 50 z" fill="var(--mark)" stroke="var(--line)" stroke-width="2"/>
+        </g>
+        <g transform="rotate(-9 380 56)"><rect class="il-stamp" x="304" y="34" width="150" height="40" rx="6"/><text class="il-stamptxt" x="379" y="60" text-anchor="middle">ПРОДУКТ</text></g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Розділи">
+  <div class="wrap">
+    <a href="#start" data-view="start">Старт</a>
+    <a href="#work" data-view="work">Майстерня</a>
+    <a href="#passport" data-view="passport">Паспорт і самооцінка</a>
+  </div>
+</nav>
+
+<main><div class="wrap">
+
+<!-- ===================== START ===================== -->
+<section class="view" id="v-start"><div class="prose">
+  <p class="stepno">Що робити на цьому уроці</p>
+  <h2>Що ми створюємо сьогодні</h2>
+  <p class="lead">Ти вже вмієш розпізнавати фейки (урок 19) і перевіряти їх інструментами (урок 20). Сьогодні перетворюєш ці знання на <b>власний продукт</b>, який допоможе іншим людям не потрапити на фейк. Створюватимеш його в Canva, а на наступному уроці презентуєш.</p>
+  <div class="callout"><b>Продукт протидії фейкам</b> — це матеріал для конкретної аудиторії (ровесників, батьків, бабусь і дідусів тощо), який пояснює, як помітити фейк і що робити далі. Це може бути інфографіка, плакат, серія сторіс, коротке відео чи вікторина.</div>
+
+  <h2>Як це працює</h2>
+  <p>У вкладці «Майстерня» шість етапів. На кожному етапі ти заповнюєш поля, а кнопка «Перевірити етап» підказує, чого бракує. Спроб скільки завгодно. На деяких етапах є інтерактив: кубики ідей, «Рентген тексту», дизайн-аудит і таймер для тесту сусіда. Наприкінці створиться <b>паспорт продукту</b>, який ти покажеш учителеві.</p>
+  <div class="scroll"><table class="tmini">
+    <tr><th>Етап</th><th>Що робиш</th><th>Час</th></tr>
+    <tr><td>1. Проблема й аудиторія</td><td>обираєш, для кого й проти якого фейку працюєш</td><td>6 хв</td></tr>
+    <tr><td>2. Формат і задум</td><td>обираєш формат, назву й головну думку</td><td>5 хв</td></tr>
+    <tr><td>3. Зміст</td><td>пишеш гасло, поради й заклик, перевіряєш «Рентгеном»</td><td>12 хв</td></tr>
+    <tr><td>4. Дизайн у Canva</td><td>розминка-аудит і створення макета</td><td>18 хв</td></tr>
+    <tr><td>5. Тест сусіда</td><td>перевіряєш, чи зрозумілий продукт іншій людині</td><td>7 хв</td></tr>
+    <tr><td>6. Фіналізація</td><td>завантажуєш файл і ділишся посиланням</td><td>5 хв</td></tr>
+    <tr><td colspan="2"><b>Разом</b></td><td><b>≈ 53 хв</b></td></tr>
+  </table></div>
+  <p>Встигаєш раніше? Є додатковий етап 7 «Версія 2».</p>
+
+  <h2>Що має бути в продукті</h2>
+  <ul>
+    <li>Одна <b>головна думка</b>, яку зрозуміло за 10 секунд.</li>
+    <li>Від 3 до 5 <b>практичних порад</b> з уроків 19–20 (ознаки, п’ять запитань, інструменти).</li>
+    <li>Хоча б один <b>інструмент перевірки</b> (StopFake, VoxCheck, Google Lens, TinEye) або п’ять запитань перед репостом.</li>
+    <li>Короткий <b>вигаданий приклад</b> фейку й спосіб його перевірити.</li>
+    <li>Чіткий <b>заклик до дії</b>: що людина має зробити.</li>
+    <li>Охайний <b>дизайн</b>: читабельно, нічого зайвого.</li>
+  </ul>
+
+  <h2>Формати на вибір</h2>
+  <div class="formats-view" id="fmtview"></div>
+
+  <h2>Правила безпеки й чесності</h2>
+  <div class="safety">
+    <ul>
+      <li>Приклади фейків придумуй самостійно. Не копіюй справжні повідомлення, не називай реальних людей і не використовуй їхні фото.</li>
+      <li>Не вказуй особистих даних: прізвищ, телефонів, адрес.</li>
+      <li>Зображення бери лише з бібліотеки Canva або власні. Не копіюй картинки з пошуку: вони можуть бути захищені авторським правом.</li>
+      <li>Обирай елементи <b>без значка корони</b>. Елементи з короною на безкоштовному акаунті матимуть водяний знак під час завантаження.</li>
+      <li>Якщо використовуєш зображення, створене штучним інтелектом, обов’язково познач це на макеті.</li>
+      <li>В Canva входь так, як сказав учитель (за запрошенням у клас чи власним акаунтом).</li>
+    </ul>
+  </div>
+
+  <h2>За чим оцінюватимуть</h2>
+  <p>Чотири критерії по 3 бали (разом 12). Їх можна переглянути й вибрати свій рівень на вкладці «Паспорт і самооцінка».</p>
+  <ul>
+    <li><b>Зміст і відповідальність:</b> правильні поради, приклад, джерела.</li>
+    <li><b>Зрозумілість для аудиторії:</b> головну думку розуміють за 10 секунд.</li>
+    <li><b>Дизайн і оформлення:</b> контраст, шрифти, кольори, вирівнювання.</li>
+    <li><b>Корисність і дія:</b> заклик, практичні кроки, зміни після тесту сусіда.</li>
+  </ul>
+  <p class="next"><a class="btn primary" href="#work">Почати майстерню</a></p>
+</div></section>
+
+<!-- ===================== WORK ===================== -->
+<section class="view" id="v-work">
+  <div class="builder">
+    <aside class="panel stlist" id="stlist" aria-label="Етапи"></aside>
+    <div class="stagecol" id="stwork"></div>
+  </div>
+</section>
+
+<!-- ===================== PASSPORT ===================== -->
+<section class="view" id="v-passport">
+  <div class="prose">
+    <p class="stepno">Результат уроку</p>
+    <h2>Паспорт продукту</h2>
+    <p class="lead">Паспорт збирається сам із того, що ти записав(-ла) в етапах. Перевір його, оціни себе й підготуйся до презентації на наступному уроці.</p>
+  </div>
+  <div class="passport" id="passport"></div>
+  <p style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="copyPass" type="button">Скопіювати текст паспорта</button><button class="btn" id="printPass" type="button">Друкувати</button><span class="note" id="copymsg" role="status"></span></p>
+
+  <div class="prose" style="margin-top:28px">
+    <h2>Самооцінювання</h2>
+    <p>Для кожного критерію обери рівень, який найкраще описує твій продукт. Це не оцінка вчителя: будь чесним(-ою). Змінювати можна скільки завгодно.</p>
+  </div>
+  <div class="panel" id="selfbox" style="max-width:760px"></div>
+  <div class="feedback" id="selfout" role="status" style="max-width:760px"></div>
+
+  <div class="prose" style="margin-top:28px">
+    <h2>Підготовка до презентації</h2>
+    <p>На наступному уроці ти презентуватимеш продукт за одну хвилину. Основа плану вже є, допиши дві речі.</p>
+  </div>
+  <div class="panel pad" id="plan" style="max-width:760px"></div>
+</section>
+
+<!-- ===================== TEACHER (hidden) ===================== -->
+<section class="view" id="v-teacher">
+  <div class="prose">
+    <h2>Для вчителя</h2>
+    <p class="lead">Ця сторінка не відображається в меню. Адреса: …/#teacher</p>
+    <h3>Орієнтовний план уроку (45 хв)</h3>
+    <ul>
+      <li>0–3 хв: інструктаж з БЖД, мета уроку, вступ на вкладці «Старт».</li>
+      <li>3–8 хв: етапи 1–2 (кубики ідей, формат і головна думка).</li>
+      <li>8–18 хв: етап 3 (зміст і «Рентген тексту»).</li>
+      <li>18–36 хв: етап 4 (дизайн-аудит і робота в Canva).</li>
+      <li>36–43 хв: етап 5 (тест сусіда) і початок етапу 6.</li>
+      <li>43–45 хв: підсумок, домашнє завдання: завершити етап 6 і паспорт.</li>
+    </ul>
+    <p>Практична частина розрахована приблизно на 53 хв, тому швидші учні встигнуть усе, а решта завершить вдома або на початку наступного уроку.</p>
+    <h3>Підготовка</h3>
+    <ul>
+      <li>Заздалегідь запросіть учнів до класу в Canva for Education (учні шкільного віку приєднуються за запрошенням учителя) або визначте, який акаунт вони використовують.</li>
+      <li>Перевірте, що на шкільних комп’ютерах відкривається canva.com.</li>
+      <li>Нагадайте про елементи без значка корони: інакше під час завантаження з’явиться водяний знак.</li>
+    </ul>
+    <h3>Критерії оцінювання (12 балів)</h3>
+    <div class="scroll"><table class="tmini">
+      <tr><th>Критерій</th><th>3 бали</th><th>2 бали</th><th>1 бал</th></tr>
+      <tr><td>Зміст і відповідальність</td><td>Поради правильні й пов’язані з уроками 19–20; є приклад, джерела або позначки; немає особистих даних.</td><td>Поради здебільшого правильні, але інструментів чи прикладу мало.</td><td>Поради загальні чи неточні.</td></tr>
+      <tr><td>Зрозумілість для аудиторії</td><td>Головну думку розуміють за 10 секунд; мова підходить аудиторії.</td><td>Думка зрозуміла, але є зайвий текст чи складні терміни.</td><td>Тест сусіда показав, що думку не розуміють.</td></tr>
+      <tr><td>Дизайн і оформлення</td><td>Контраст, не більше двох шрифтів і трьох кольорів, вирівнювання, чіткі зображення.</td><td>Один-два недоліки.</td><td>Макет перевантажений, важко читати.</td></tr>
+      <tr><td>Корисність і дія</td><td>Є заклик і практичні кроки; після тесту сусіда внесено зміну.</td><td>Заклик є, але кроки загальні або змін не внесено.</td><td>Немає заклику до дії.</td></tr>
+    </table></div>
+    <h3>На що звернути увагу</h3>
+    <ul>
+      <li>У паспорті є посилання на Canva й відповіді сусіда з тесту: за ними видно, чи працював учень над покращенням.</li>
+      <li>«Рентген тексту» перевіряє лише стиль (довжину, емоційність, наявність заклику), а не правдивість порад.</li>
+      <li>Етап 7 («Версія 2») необов’язковий, його можна зарахувати як додатковий бал.</li>
+    </ul>
+  </div>
+</section>
+
+</div></main>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "product21-v1";
+  var storageOK = (function () { try { var k = "__p21"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return true; } catch (e) { return false; } })();
+  function loadState() { try { var s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+  var saved = loadState() || {};
+  var st = { name: saved.name || "", done: saved.done || {}, f: saved.f || {}, stage: saved.stage || "s1", dice: saved.dice || { vals: {}, locks: {} }, challenge: saved.challenge || "", audit: saved.audit || { found: [], miss: 0 }, self: saved.self || {}, plan: saved.plan || { best: "", improve: "" } };
+  function persist() { if (!storageOK) return; try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { storageOK = false; showWarn(); } }
+  function showWarn() {
+    var w = document.getElementById("storewarn");
+    if (!w) {
+      w = document.createElement("div"); w.id = "storewarn"; w.setAttribute("role", "alert"); w.className = "storewarn";
+      w.textContent = "Браузер не дозволяє зберігати прогрес (можливо, увімкнено приватний режим). Не закривай і не оновлюй сторінку, доки не скопіюєш паспорт продукту.";
+      var host = document.querySelector("header.top .wrap > div"); host.insertBefore(w, host.firstChild);
+    }
+    w.classList.add("on");
+  }
+  window.addEventListener("pagehide", persist);
+  document.addEventListener("visibilitychange", function () { if (document.hidden) persist(); });
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, a, kids) {
+    var e = document.createElement(tag);
+    if (a) for (var k in a) {
+      var v = a[k];
+      if (k === "text") e.textContent = v;
+      else if (k === "html") e.innerHTML = v;
+      else if (k.indexOf("on") === 0) e.addEventListener(k.slice(2), v);
+      else if (k === "value" || k === "checked" || k === "disabled") e[k] = v;
+      else if (v !== false && v != null) e.setAttribute(k, v);
+    }
+    (kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function nowIso() { return new Date().toISOString(); }
+  $("who").value = st.name || "";
+  $("who").addEventListener("input", function () { st.name = $("who").value; persist(); if ($("v-passport").classList.contains("on")) renderPassport(); });
+  if (!storageOK) showWarn();
+
+  /* ======================= ROUTING ======================= */
+  var VIEWS = ["start", "work", "passport", "teacher"], hooks = {};
+  function route() {
+    var v = (location.hash || "").slice(1), has = VIEWS.indexOf(v) >= 0;
+    if (!has) v = "start";
+    VIEWS.forEach(function (x) { $("v-" + x).classList.toggle("on", x === v); });
+    document.querySelectorAll("nav.tabs a").forEach(function (a) { if (a.dataset.view === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    if (hooks[v]) hooks[v]();
+    if (has) window.scrollTo({ top: document.querySelector("nav.tabs").offsetTop - 1 });
+  }
+  window.addEventListener("hashchange", route);
+
+  /* ======================= DATA ======================= */
+  var AUD = ["Однокласники й ровесники", "Молодші школярі", "Батьки", "Бабусі й дідусі", "Учителі", "Мешканці мого району"];
+  var KINDS = ["Вигадана новина", "Зображення чи відео поза контекстом", "Діпфейк або зображення, створене ШІ", "Фішинг чи шахрайське повідомлення", "Клікбейт", "Псевдонаука й «чудо-поради»", "Ланцюгове повідомлення"];
+  var FORMATS = [
+    { id: "f1", name: "Інфографіка «Крок за кроком»", canva: "«Інфографіка»", size: "4–6 блоків на одній довгій сторінці", lvl: "середня", info: "У Canva шукай тип дизайну «Інфографіка». Одна сторінка, у якій кроки йдуть зверху вниз." },
+    { id: "f2", name: "Плакат для школи", canva: "«Плакат»", size: "1 аркуш (A4 або A3)", lvl: "проста", info: "У Canva шукай тип дизайну «Плакат». Одна яскрава думка, великий заголовок і заклик унизу." },
+    { id: "f3", name: "Серія сторіс (3–5 слайдів)", canva: "«Історія» (вертикальний формат)", size: "3–5 слайдів 1080×1920", lvl: "середня", info: "У Canva шукай «Історія» (Story). На кожному слайді одна думка, останній слайд — заклик." },
+    { id: "f4", name: "Коротке відео (15–30 с)", canva: "«Відео»", size: "15–30 секунд", lvl: "складна, потрібно більше часу", info: "У Canva шукай тип «Відео». Заплануй 4–5 коротких кадрів із текстом; анімацію додавай наприкінці, якщо встигаєш." },
+    { id: "f5", name: "Вікторина «Фейк чи правда?»", canva: "«Презентація»", size: "5–6 слайдів із запитаннями й відповідями", lvl: "середня", info: "У Canva шукай «Презентація». На слайді картка-повідомлення, на наступному відповідь і пояснення." },
+    { id: "f6", name: "Пам’ятка-чекліст (A4)", canva: "«Документ» або «Плакат» (A4)", size: "1 аркуш", lvl: "проста", info: "У Canva обери «Плакат» формату A4 або «Документ». П’ять запитань перед репостом, інструменти й заклик." }
+  ];
+  var CHALLENGES = ["Без жодного знака оклику", "Лише 3 поради", "Не більше двох кольорів", "Усе пояснюється за 15 секунд", "Додай приклад із життя", "Звернись до читача питанням", "Жодного довгого абзацу"];
+  var TOOLS = ["StopFake", "VoxCheck", "Google Lens", "TinEye", "П’ять запитань перед репостом"];
+  var MARKS = ["Зображення з безкоштовної бібліотеки Canva", "Власні малюнки чи фото", "Зображення створено ШІ, і це позначено", "Вказано джерела (сайти фактчекерів)", "Без зображень"];
+  var DESIGN = ["Головна думка — найбільший текст на макеті", "Текст контрастний, його легко прочитати", "Не більше двох шрифтів", "Не більше трьох кольорів", "Елементи вирівняні, є відступи від країв", "Зображення чіткі й без значка корони (немає водяних знаків)", "Є заклик до дії", "Джерела вказано або зображення ШІ позначено (якщо вони є)"];
+  function fmtById(id) { return FORMATS.filter(function (f) { return f.id === id; })[0]; }
+
+  /* ----- text helpers ----- */
+  function wordsOf(s) { return String(s || "").match(/[\p{L}\p{N}’'-]+/gu) || []; }
+  function linesOf(s) { return String(s || "").split(/\n+/).map(function (x) { return x.trim(); }).filter(function (x) { return x.length > 1; }); }
+  function minLen(n, msg) { return function (v) { return String(v || "").trim().length >= n ? "" : msg; }; }
+  function wordsBetween(a, b, msg) { return function (v) { var n = wordsOf(v).length; return n >= a && n <= b ? "" : msg; }; }
+  function linesBetween(a, b, msg) { return function (v) { var n = linesOf(v).length; return n >= a && n <= b ? "" : msg; }; }
+  function anySel(msg) { return function (v) { return v ? "" : msg || "Обери варіант зі списку."; }; }
+  function chipsMin(n, msg) { return function (v) { return (v || []).length >= n ? "" : msg; }; }
+  function allTicked(count, msg) { return function (v) { return (v || []).length >= count ? "" : msg; }; }
+  function urlRe(re, msg) { return function (v) { return re.test(String(v || "").trim()) ? "" : msg; }; }
+  function vals(sid) { return st.f[sid] || (st.f[sid] = {}); }
+
+  /* ======================= XRAY ======================= */
+  var CAPS_OK = ["SMS", "IFCN", "NASA", "PNG", "PDF", "QR"];
+  function xrayData() {
+    var v = vals("s3"), all = [v.slogan, v.tips, v.example, v.cta].join("\n");
+    var slogan = wordsOf(v.slogan).length, tips = linesOf(v.tips).length;
+    var excl = (all.match(/!/g) || []).length;
+    var caps = (all.match(/[\p{Lu}]{3,}/gu) || []).filter(function (w) { return CAPS_OK.indexOf(w) < 0; }).length;
+    var manip = /(шок|терміново|жах|сенсаці|паніка|катастроф)/i.test(all);
+    var toolsHit = (v.tools || []).length > 0 || /(stopfake|voxcheck|lens|об[’']?єктив|tineye|п[’']ять запитань)/i.test(all);
+    var cta = /(перевір|зупин|запит|знайд|порівня|подума|скористай|повідом|не пересила|не переходь|не вводь|поскарж|дізнай|обер|став)/i.test(String(v.cta || ""));
+    var sents = String(all).split(/[.!?…]+|\n+/).filter(function (s) { return wordsOf(s).length > 0; });
+    var avg = sents.length ? wordsOf(all).length / sents.length : 99;
+    var ex = String(v.example || "").trim().length >= 20;
+    var rows = [
+      { ok: slogan >= 2 && slogan <= 10, t: "Коротке гасло", d: slogan ? "У гаслі слів: " + slogan + ". Найкраще від 2 до 10." : "Напиши гасло: від 2 до 10 слів." },
+      { ok: tips >= 3 && tips <= 5, t: "3–5 порад", d: tips ? "Порад: " + tips + ". Менше трьох — замало, більше п’яти — ніхто не запам’ятає." : "Напиши поради, кожну з нового рядка." },
+      { ok: cta, t: "Є заклик до дії", d: "Заклик має починатися з дієслова: «Перевір…», «Зупинись…», «Запитай…»." },
+      { ok: toolsHit, t: "Названо інструмент перевірки", d: "Познач або згадай StopFake, VoxCheck, Google Lens, TinEye чи п’ять запитань." },
+      { ok: ex, t: "Є приклад", d: "Опиши короткий вигаданий приклад фейку й спосіб його перевірки." },
+      { ok: excl <= 2 && caps <= 1 && !manip, t: "Спокійний тон", d: "У тексті проти фейків не варто тиснути на емоції: знаків оклику ≤ 2, не більше одного слова ВЕЛИКИМИ літерами, без слів «шок», «терміново», «жах»." },
+      { ok: avg <= 16, t: "Короткі речення", d: "Середня довжина речення: " + (sents.length ? Math.round(avg) : "—") + " слів. Найкраще до 16." }
+    ];
+    var score = rows.filter(function (r) { return r.ok; }).length;
+    return { rows: rows, score: score };
+  }
+  function renderXray(target) {
+    var box = target || $("xray"); if (!box) return;
+    var x = xrayData(); box.innerHTML = "";
+    box.appendChild(el("div", { class: "xhead" }, [el("b", { text: "Рентген тексту" }), el("span", { text: x.score + " з 7" })]));
+    x.rows.forEach(function (r) { box.appendChild(el("div", { class: "xrow " + (r.ok ? "pass" : "fail") }, [el("div", { class: "mk", text: r.ok ? "✓" : "!" , "aria-hidden": "true" }), el("div", null, [el("b", { text: r.t + (r.ok ? "" : ": доопрацюй") }), el("small", { text: r.d })])])); });
+    box.appendChild(el("div", { class: "xnote", text: "Рентген — помічник, а не суддя: він оцінює стиль, але не правдивість порад. Щоб пройти етап, потрібно щонайменше 5 з 7." }));
+  }
+
+  /* ======================= STAGES ======================= */
+  var STAGES = [
+    { id: "s1", n: "1", title: "Проблема й аудиторія", min: 6, pre: "dice",
+      text: "Обери, для кого ти працюєш і проти якого виду фейків. Не знаєш, з чого почати? Кинь кубики ідей.",
+      fields: [
+        { id: "audience", label: "Для кого твій продукт?", type: "select", options: AUD, check: anySel() },
+        { id: "kind", label: "Проти якого виду фейків він спрямований?", type: "select", options: KINDS, check: anySel() },
+        { id: "situation", label: "У якій ситуації ця аудиторія може зустріти такий фейк?", type: "area", help: "Придумай вигадану, але правдоподібну ситуацію (1–2 речення).", check: minLen(20, "Опиши ситуацію щонайменше одним реченням.") },
+        { id: "danger", label: "Чому це небезпечно саме для цієї аудиторії?", type: "area", check: minLen(15, "Поясни, чим це небезпечно (щонайменше одне речення).") }
+      ] },
+    { id: "s2", n: "2", title: "Формат і задум", min: 5,
+      text: "Обери формат продукту, придумай назву й сформулюй головну думку одним реченням.",
+      fields: [
+        { id: "format", label: "Формат продукту", type: "format", check: anySel("Обери формат.") },
+        { id: "name", label: "Назва продукту", type: "text", ph: "Наприклад, «Стоп, перевір!»", check: minLen(3, "Придумай назву.") },
+        { id: "message", label: "Головна думка одним реченням", type: "text", counter: "words", help: "Від 3 до 14 слів. Це те, що людина має запам’ятати.", check: wordsBetween(3, 14, "Головна думка: одне речення від 3 до 14 слів.") },
+        { id: "why", label: "Чому цей формат підходить твоїй аудиторії?", type: "area", check: minLen(15, "Поясни вибір формату (щонайменше одне речення).") },
+        { id: "tone", label: "Який тон обираєш?", type: "select", options: ["Спокійний і діловий", "Дружній", "З легким гумором", "Серйозний, але не лякаючий"], check: anySel() }
+      ] },
+    { id: "s3", n: "3", title: "Зміст", min: 12, post: "xray",
+      text: "Напиши зміст продукту. «Рентген тексту» нижче одразу покаже, що можна покращити. Щоб пройти етап, потрібно набрати щонайменше 5 балів із 7.",
+      fields: [
+        { id: "slogan", label: "Гасло або заголовок", type: "text", counter: "words", help: "Від 2 до 10 слів.", check: wordsBetween(2, 10, "Гасло: від 2 до 10 слів.") },
+        { id: "tips", label: "Поради", type: "area", counter: "lines", help: "Від 3 до 5 порад, кожна з нового рядка.", check: linesBetween(3, 5, "Напиши від 3 до 5 порад, кожну з нового рядка.") },
+        { id: "example", label: "Приклад фейку (вигаданий) і як його перевірити", type: "area", check: minLen(20, "Опиши приклад і спосіб перевірки (щонайменше одне речення).") },
+        { id: "tools", label: "Які інструменти перевірки згадаєш?", type: "chips", options: TOOLS, check: chipsMin(1, "Познач хоча б один варіант.") },
+        { id: "cta", label: "Заклик до дії", type: "text", ph: "Наприклад, «Перевір джерело, перш ніж поділитися»", check: minLen(8, "Напиши заклик до дії: що має зробити людина.") },
+        { id: "marks", label: "Яка в тебе зображальна основа й джерела?", type: "chips", options: MARKS, check: chipsMin(1, "Познач хоча б один варіант.") }
+      ],
+      gate: function () { var x = xrayData(); return x.score >= 5 ? "" : "Рентген тексту: " + x.score + " з 7. Доопрацюй текст так, щоб було щонайменше 5."; } },
+    { id: "s4", n: "4", title: "Дизайн у Canva", min: 18, pre: "audit",
+      text: "Спершу розминка: знайди помилки на плакаті. Потім створи свій макет у Canva за інструкцією й перевір його за чеклістом.",
+      mid: "canva",
+      fields: [
+        { id: "design", label: "Чекліст дизайну: познач усе, що виконано", type: "list", items: DESIGN, check: allTicked(DESIGN.length, "Познач усі пункти чекліста. Якщо щось не виконано, виправ це в Canva.") },
+        { id: "fixed", label: "Яку помилку дизайну ти знайшов(-ла) у своєму макеті й виправив(-ла)?", type: "area", check: minLen(10, "Опиши одну виправлену помилку.") }
+      ],
+      gate: function () { return st.audit.found.length >= 5 ? "" : "Дизайн-аудит: знайдено " + st.audit.found.length + " з 7. Знайди щонайменше 5 помилок на плакаті."; } },
+    { id: "s5", n: "5", title: "Тест сусіда", min: 7, pre: "neighbor",
+      text: "Перевір, чи зрозуміла твоя робота іншій людині. Ти спостерігаєш і записуєш, а не пояснюєш.",
+      fields: [
+        { id: "neighbor", label: "Ім’я сусіда (достатньо імені)", type: "text", check: minLen(2, "Запиши ім’я сусіда.") },
+        { id: "main", label: "Що сусід назвав головною думкою?", type: "area", check: minLen(10, "Запиши, що сказав сусід.") },
+        { id: "action", label: "Що, за словами сусіда, треба зробити після перегляду?", type: "area", check: minLen(8, "Запиши відповідь сусіда.") },
+        { id: "unclear", label: "Що було незрозуміло?", type: "area", help: "Якщо нічого, напиши «нічого».", check: minLen(3, "Запиши, що було незрозуміло, або «нічого».") },
+        { id: "clarity", label: "Наскільки зрозумілим сусід оцінив продукт? (1 — зовсім ні, 5 — повністю)", type: "select", options: ["1", "2", "3", "4", "5"], check: anySel() },
+        { id: "match", label: "Чи сусід правильно назвав головну думку?", type: "select", options: ["Так, правильно", "Майже, частково", "Ні, зрозумів інакше"], check: anySel() },
+        { id: "change", label: "Що ти змінюєш після тесту?", type: "area", check: minLen(15, "Опиши хоча б одну зміну.") },
+        { id: "confirm", label: "Підтвердження", type: "list", items: ["Я вніс(-ла) цю зміну в Canva"], check: allTicked(1, "Внеси зміну в Canva й познач цей пункт.") }
+      ] },
+    { id: "s6", n: "6", title: "Фіналізація", min: 5, pre: "final",
+      text: "Збережи роботу, завантаж файл і створи посилання, яке зможе відкрити вчитель.",
+      fields: [
+        { id: "link", label: "Посилання на дизайн у Canva (лише для перегляду)", type: "text", ph: "https://www.canva.com/design/…", check: urlRe(/(canva\.com|canva\.link)\/.{4,}/i, "Встав посилання на дизайн: воно має містити canva.com або canva.link.") },
+        { id: "confirm", label: "Підтвердження", type: "list", items: ["Я завантажив(-ла) файл (PNG або PDF)", "Я налаштував(-ла) посилання «лише перегляд», і сусід його відкрив", "У макеті немає елементів із короною (немає водяних знаків)"], check: allTicked(3, "Познач усі три пункти.") }
+      ] },
+    { id: "s7", n: "7", bonus: true, title: "Версія 2 (додатково)", min: 10,
+      text: "Додаткове завдання для тих, хто встиг. Обери виклик і виконай його в Canva (або на копії дизайну).",
+      fields: [
+        { id: "pick", label: "Обери додатковий виклик", type: "select", options: ["Зроби версію для іншої аудиторії й зміни щонайменше три пункти", "Створи 5 карток вікторини «Фейк чи правда?» за своїм продуктом", "Адаптуй продукт під інший формат (наприклад, з плаката в серію сторіс)", "Переклади продукт англійською, щоб його зрозуміли й друзі за кордоном"], check: anySel() },
+        { id: "result", label: "Що ти зробив(-ла)?", type: "area", check: minLen(20, "Опиши результат щонайменше одним реченням.") }
+      ] }
+  ];
+  function findStage(id) { return STAGES.filter(function (s) { return s.id === id; })[0] || STAGES[0]; }
+  var lastFb = {}, lastErr = {};
+
+  /* ----- timers ----- */
+  var tm = { id: null, left: 0, running: false, stage: null, upd: null };
+  function stopTimer() { if (tm.id) clearInterval(tm.id); tm.id = null; tm.running = false; }
+  function fmtClock(sec) { var m = Math.floor(Math.abs(sec) / 60), r = Math.abs(sec) % 60; return (sec < 0 ? "−" : "") + (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r; }
+  function stageTimer(s) {
+    if (tm.stage !== s.id) { stopTimer(); tm.stage = s.id; tm.left = s.min * 60; }
+    var clock = el("span", { class: "clock", text: fmtClock(tm.left) });
+    var bStart = el("button", { class: "btn small", type: "button", text: tm.running ? "Пауза" : (tm.left < s.min * 60 ? "Продовжити" : "Запустити таймер") });
+    var bReset = el("button", { class: "btn small", type: "button", text: "Скинути" });
+    function upd() { clock.textContent = fmtClock(tm.left); clock.classList.toggle("over", tm.left < 0); }
+    upd(); tm.upd = upd;
+    bStart.addEventListener("click", function () {
+      if (tm.running) { stopTimer(); bStart.textContent = "Продовжити"; return; }
+      tm.running = true; bStart.textContent = "Пауза";
+      tm.id = setInterval(function () { tm.left--; if (tm.upd) tm.upd(); }, 1000);
+    });
+    bReset.addEventListener("click", function () { stopTimer(); tm.left = s.min * 60; upd(); bStart.textContent = "Запустити таймер"; });
+    if (tm.running && !tm.id) tm.id = setInterval(function () { tm.left--; if (tm.upd) tm.upd(); }, 1000);
+    return el("div", { class: "timerbox" }, [el("span", { class: "note", text: "Орієнтовно " + s.min + " хв" }), clock, bStart, bReset]);
+  }
+
+  /* ----- fields ----- */
+  function counterText(f, v) {
+    if (f.counter === "words") { var n = wordsOf(v).length; return "Слів: " + n; }
+    if (f.counter === "lines") { var m = linesOf(v).length; return "Порад: " + m; }
+    return "";
+  }
+  function counterClass(f, v) {
+    if (f.counter === "words") { var n = wordsOf(v).length, r = f.id === "slogan" ? [2, 10] : [3, 14]; return n >= r[0] && n <= r[1] ? "good" : n ? "warn" : ""; }
+    if (f.counter === "lines") { var m = linesOf(v).length; return m >= 3 && m <= 5 ? "good" : m ? "warn" : ""; }
+    return "";
+  }
+  function fieldEl(s, f) {
+    var v = vals(s.id)[f.id], wrap = el("div", { class: "fld", id: "fld-" + s.id + "-" + f.id }), inp, iid = "in-" + s.id + "-" + f.id;
+    var lab = el("label", { text: f.label }); if (f.type !== "chips" && f.type !== "list" && f.type !== "format") lab.setAttribute("for", iid);
+    wrap.appendChild(lab);
+    if (f.help) wrap.appendChild(el("p", { class: "help", text: f.help }));
+    var cnt = null;
+    function setVal(x) { vals(s.id)[f.id] = x; persist(); if (cnt) { cnt.textContent = counterText(f, x); cnt.className = "counter " + counterClass(f, x); } if (s.id === "s3") renderXray(); }
+    if (f.type === "area") { inp = el("textarea", { id: iid, rows: "3" }); inp.value = v || ""; inp.addEventListener("input", function () { setVal(inp.value); }); }
+    else if (f.type === "select") {
+      inp = el("select", { id: iid }); inp.appendChild(el("option", { value: "", text: "— оберіть —" }));
+      f.options.forEach(function (o) { inp.appendChild(el("option", { value: o, text: o })); });
+      inp.value = v || ""; inp.addEventListener("change", function () { setVal(inp.value); });
+    } else if (f.type === "chips") {
+      inp = el("div", { class: "chips", role: "group", "aria-label": f.label });
+      var cur = vals(s.id)[f.id] = vals(s.id)[f.id] || [];
+      f.options.forEach(function (o) {
+        var b = el("button", { type: "button", class: "chip", "aria-pressed": String(cur.indexOf(o) >= 0), text: o, onclick: function () { var i = cur.indexOf(o); if (i >= 0) cur.splice(i, 1); else cur.push(o); b.setAttribute("aria-pressed", String(i < 0)); persist(); if (s.id === "s3") renderXray(); } });
+        inp.appendChild(b);
+      });
+    } else if (f.type === "list") {
+      inp = el("div", { class: "items", role: "group", "aria-label": f.label });
+      var chk = vals(s.id)[f.id] = vals(s.id)[f.id] || [];
+      f.items.forEach(function (o) {
+        var b = el("button", { type: "button", "aria-pressed": String(chk.indexOf(o) >= 0), onclick: function () { var i = chk.indexOf(o); if (i >= 0) chk.splice(i, 1); else chk.push(o); b.setAttribute("aria-pressed", String(i < 0)); b.querySelector(".box").textContent = i < 0 ? "✓" : ""; persist(); } }, [el("span", { class: "box", "aria-hidden": "true", text: chk.indexOf(o) >= 0 ? "✓" : "" }), el("span", { text: o })]);
+        inp.appendChild(b);
+      });
+    } else if (f.type === "format") {
+      inp = el("div"); var grid = el("div", { class: "fmtgrid", role: "group", "aria-label": "Формат" }), info = el("div", { class: "fmtinfo", "aria-live": "polite" });
+      function showInfo() { var cf = fmtById(vals(s.id)[f.id]); info.textContent = cf ? "Тип дизайну в Canva: " + cf.canva + ". " + cf.info + " Складність: " + cf.lvl + "." : "Обери формат, і тут з’являться підказки для Canva."; }
+      FORMATS.forEach(function (o) {
+        var b = el("button", { type: "button", class: "fmt", "aria-pressed": String(vals(s.id)[f.id] === o.id), onclick: function () { vals(s.id)[f.id] = o.id; persist(); [].forEach.call(grid.children, function (c) { c.setAttribute("aria-pressed", "false"); }); b.setAttribute("aria-pressed", "true"); showInfo(); } }, [el("b", { text: o.name }), el("span", { text: o.size }), el("span", { text: "Складність: " + o.lvl })]);
+        grid.appendChild(b);
+      });
+      showInfo(); inp.appendChild(grid); inp.appendChild(info);
+    } else { inp = el("input", { id: iid, type: "text", autocomplete: "off", placeholder: f.ph || "" }); inp.value = v || ""; inp.addEventListener("input", function () { setVal(inp.value); }); }
+    wrap.appendChild(inp);
+    if (f.counter) { cnt = el("div", { class: "counter " + counterClass(f, v), text: counterText(f, v) }); wrap.appendChild(cnt); }
+    var msg = (lastErr[s.id] || {})[f.id];
+    if (msg && inp.setAttribute && f.type !== "chips" && f.type !== "list" && f.type !== "format") inp.setAttribute("aria-invalid", "true");
+    wrap.appendChild(el("div", { class: "ferr", id: "err-" + s.id + "-" + f.id, text: msg || "" }));
+    return wrap;
+  }
+
+  /* ----- stage runner ----- */
+  function runCheck(s) {
+    var errs = {}, n = 0, v = vals(s.id), gate = "";
+    s.fields.forEach(function (f) { var m = f.check(v[f.id]); if (m) { errs[f.id] = m; n++; } });
+    if (s.gate) gate = s.gate();
+    lastErr[s.id] = errs;
+    if (!n && !gate) { st.done[s.id] = st.done[s.id] || nowIso(); persist(); lastFb[s.id] = { ok: true, msg: "Етап виконано! Молодець." }; }
+    else lastFb[s.id] = { ok: false, msg: (n ? (n === 1 ? "Є одне поле, яке треба виправити чи заповнити (виділено нижче). " : "Полів, які треба виправити чи заповнити: " + n + " (виділено нижче). ") : "") + gate };
+    renderWork(); renderList();
+    var first = document.querySelector("#stwork .ferr:not(:empty)");
+    if (first && first.scrollIntoView) { try { first.scrollIntoView({ block: "center" }); } catch (e) {} }
+  }
+  function resetStage(s) {
+    delete st.f[s.id]; delete lastErr[s.id]; delete lastFb[s.id];
+    if (s.id === "s4") st.audit = { found: [], miss: 0 };
+    persist(); renderWork(); renderList();
+  }
+  function fbBox(s) {
+    var fb = el("div", { class: "feedback", role: "status" }), lf = lastFb[s.id];
+    if (lf) { fb.className = "feedback " + (lf.ok ? "ok" : "bad"); fb.textContent = lf.msg; }
+    return fb;
+  }
+  function renderList() {
+    var box = $("stlist"); box.innerHTML = "";
+    var core = STAGES.filter(function (s) { return !s.bonus; }), n = core.filter(function (s) { return st.done[s.id]; }).length;
+    box.appendChild(el("h2", { text: "Етапи" }));
+    box.appendChild(el("p", { class: "note", style: "margin:0 4px", text: "Виконано " + n + " з " + core.length }));
+    box.appendChild(el("div", { class: "prog", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(core.length), "aria-valuenow": String(n) }, [el("i", { style: "width:" + Math.round(n / core.length * 100) + "%" })]));
+    STAGES.forEach(function (s) {
+      var b = el("button", { type: "button", class: "stbtn" + (st.done[s.id] ? " done" : "") + (s.bonus ? " bonus" : ""), "aria-pressed": String(st.stage === s.id), onclick: function () { st.stage = s.id; persist(); renderList(); renderWork(); } }, [el("span", { class: "n", text: st.done[s.id] ? "✓" : s.n }), el("span", null, [document.createTextNode(s.title), el("small", { text: (s.bonus ? "додатково, " : "") + "≈ " + s.min + " хв" })])]);
+      box.appendChild(b);
+    });
+  }
+
+  /* ----- interactives ----- */
+  var DICE = [
+    { id: "aud", label: "Аудиторія", opts: AUD },
+    { id: "kind", label: "Вид фейку", opts: KINDS },
+    { id: "fmt", label: "Формат", opts: FORMATS.map(function (f) { return f.name; }) },
+    { id: "ch", label: "Виклик", opts: CHALLENGES }
+  ];
+  function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function paintDice() { [].forEach.call(document.querySelectorAll(".die .dv"), function (n) { var v = st.dice.vals[n.getAttribute("data-die")]; if (v) n.textContent = v; }); }
+  function diceBlock(s) {
+    var sect = el("div", { class: "sect" }), box = el("div", { class: "dice" });
+    sect.appendChild(el("h4", { text: "Кубики ідей" }));
+    sect.appendChild(el("p", { class: "subp", text: "Кинь кубики, щоб отримати випадкову комбінацію. Зафіксуй те, що подобається, і кинь решту ще раз. Виклик — необов’язкова обмежувальна умова для цікавішої роботи." }));
+    var dv = {};
+    DICE.forEach(function (d) {
+      var val = el("div", { class: "dv", "data-die": d.id, text: st.dice.vals[d.id] || "— кинь кубики —" }); dv[d.id] = val;
+      var lock = el("button", { type: "button", "aria-pressed": String(!!st.dice.locks[d.id]), text: st.dice.locks[d.id] ? "Зафіксовано" : "Зафіксувати", onclick: function () { st.dice.locks[d.id] = !st.dice.locks[d.id]; lock.setAttribute("aria-pressed", String(!!st.dice.locks[d.id])); lock.textContent = st.dice.locks[d.id] ? "Зафіксовано" : "Зафіксувати"; persist(); } });
+      box.appendChild(el("div", { class: "die" }, [el("div", { class: "dl", text: d.label }), val, lock]));
+    });
+    sect.appendChild(box);
+    var rolling = false;
+    var roll = el("button", { class: "btn", type: "button", text: "Кинути кубики", onclick: function () {
+      if (rolling) return; rolling = true; box.classList.add("rolling");
+      var reduced = false; try { reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+      var ticks = reduced ? 1 : 8, i = 0;
+      var iv = setInterval(function () {
+        DICE.forEach(function (d) { if (!st.dice.locks[d.id]) st.dice.vals[d.id] = rnd(d.opts); });
+        paintDice();
+        if (++i >= ticks) { clearInterval(iv); rolling = false; var bx = document.querySelector(".dice"); if (bx) bx.classList.remove("rolling"); persist(); }
+      }, reduced ? 10 : 90);
+    } });
+    var take = el("button", { class: "btn primary", type: "button", text: "Взяти цю комбінацію", onclick: function () {
+      var v = st.dice.vals;
+      if (!v.aud || !v.kind || !v.fmt) { msg.textContent = "Спершу кинь кубики."; return; }
+      vals("s1").audience = v.aud; vals("s1").kind = v.kind;
+      var cf = FORMATS.filter(function (f) { return f.name === v.fmt; })[0]; if (cf) vals("s2").format = cf.id;
+      st.challenge = v.ch || ""; persist(); renderWork();
+    } });
+    var msg = el("span", { class: "note", role: "status" });
+    sect.appendChild(el("div", { style: "display:flex;gap:10px;flex-wrap:wrap;align-items:center" }, [roll, take, msg]));
+    if (st.challenge) sect.appendChild(el("p", { class: "note", style: "margin-top:8px", text: "Твій виклик: " + st.challenge }));
+    return sect;
+  }
+  function xrayBlock() { var w = el("div", { class: "xray", id: "xray" }); renderXray(w); return w; }
+
+  var FLAWS = [
+    { t: "Низький контраст", d: "Світло-сірий текст на білому важко читати. Обирай темний текст на світлому тлі або навпаки." },
+    { t: "Забагато тексту", d: "Суцільний блок дрібного тексту ніхто не читає. Залиш головне, а решту скороти або розбий на пункти." },
+    { t: "Різні шрифти", d: "Три різні шрифти створюють хаос. Достатньо двох: для заголовків і для основного тексту." },
+    { t: "Нерівне вирівнювання", d: "Один блок «з’їхав». Використовуй напрямні й вирівнювання в Canva, щоб елементи стояли рівно." },
+    { t: "Розмите зображення", d: "Низька роздільність виглядає недбало. Обирай чіткі зображення з бібліотеки Canva." },
+    { t: "Немає заклику до дії", d: "Читач не знає, що робити далі. Додай чіткий заклик, наприклад унизу плаката." },
+    { t: "Забагато кольорів", d: "П’ять яскравих кольорів дратують око. Обери два-три кольори й тримайся їх." }
+  ];
+  var HOTS = [[16, 88, 330, 18], [20, 356, 320, 86], [180, 124, 170, 78], [40, 298, 150, 46], [20, 115, 150, 100], [20, 452, 320, 40], [0, 0, 360, 46]];
+  function posterSvg() {
+    var mosaic = "", cols = 10, rows = 6, i, j, shades = ["#9aa3ad", "#b8bec6", "#8a929c", "#cfd3d8", "#a7adb5", "#7d858f"];
+    for (i = 0; i < rows; i++) for (j = 0; j < cols; j++) mosaic += '<rect x="' + (20 + j * 15) + '" y="' + (115 + i * 16.6) + '" width="15" height="16.6" fill="' + shades[(i * 3 + j * 5 + i * j) % shades.length] + '"/>';
+    var dense = ""; for (i = 0; i < 10; i++) dense += '<rect x="22" y="' + (360 + i * 8) + '" width="' + (292 - (i % 3) * 18) + '" height="3.4" rx="1.5" fill="#444"/>';
+    var s = '<svg id="poster" class="poster" viewBox="0 0 360 500" role="group" aria-label="Плакат із помилками дизайну">' +
+      '<rect width="360" height="500" fill="#fff"/>' +
+      '<rect x="0" y="0" width="90" height="46" fill="#ff2fb3"/><rect x="90" y="0" width="90" height="46" fill="#b6ff00"/><rect x="180" y="0" width="90" height="46" fill="#00e5ff"/><rect x="270" y="0" width="90" height="46" fill="#ff9d00"/>' +
+      '<text x="20" y="80" font-family="Arial, sans-serif" font-weight="700" font-size="21" fill="#222">ЯК НЕ ПОТРАПИТИ НА ФЕЙК</text>' +
+      '<text x="20" y="100" font-family="Arial, sans-serif" font-size="12" fill="#d9d9d9">Прості правила для кожного з нас</text>' + mosaic +
+      '<text x="185" y="140" font-family="Georgia, serif" font-size="14" fill="#222">1. Перевір джерело</text>' +
+      '<text x="185" y="166" font-family="Courier New, monospace" font-size="13" fill="#222">2. Подивись на дату</text>' +
+      '<text x="185" y="192" font-family="Brush Script MT, cursive" font-size="17" fill="#222">3. Запитай інших</text>' +
+      '<rect x="20" y="236" width="150" height="46" rx="6" fill="#eef2ff" stroke="#999"/><text x="30" y="264" font-family="Arial, sans-serif" font-size="12" fill="#222">Не пересилай одразу</text>' +
+      '<rect x="190" y="236" width="150" height="46" rx="6" fill="#eef2ff" stroke="#999"/><text x="200" y="264" font-family="Arial, sans-serif" font-size="12" fill="#222">Знайди першоджерело</text>' +
+      '<rect x="40" y="298" width="150" height="46" rx="6" fill="#eef2ff" stroke="#999"/><text x="50" y="326" font-family="Arial, sans-serif" font-size="12" fill="#222">Порівняй джерела</text>' + dense;
+    HOTS.forEach(function (h, k) { s += '<rect class="hot" data-i="' + k + '" x="' + h[0] + '" y="' + h[1] + '" width="' + h[2] + '" height="' + h[3] + '" tabindex="0" role="button" aria-label="Підозріла ділянка плаката ' + (k + 1) + '"/>'; });
+    return s + '</svg>';
+  }
+  function goodPosterSvg() {
+    return '<svg class="poster" viewBox="0 0 360 500" role="img" aria-label="Виправлений плакат"><rect width="360" height="500" fill="#fff"/>' +
+      '<rect width="360" height="130" fill="#1f3a5f"/><text x="24" y="62" font-family="Arial, sans-serif" font-weight="700" font-size="28" fill="#fff">Перевір,</text><text x="24" y="98" font-family="Arial, sans-serif" font-weight="700" font-size="28" fill="#fff">перш ніж поділитися</text>' +
+      [0, 1, 2].map(function (k) { var y = 160 + k * 78, t = ["Знайди автора й дату", "Шукай інші джерела", "Перевір фото через Lens чи TinEye"][k]; return '<circle cx="46" cy="' + (y + 28) + '" r="20" fill="#1f7a4d"/><text x="46" y="' + (y + 35) + '" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#fff">' + (k + 1) + '</text><text x="82" y="' + (y + 34) + '" font-family="Arial, sans-serif" font-size="17" fill="#1f2430">' + t + '</text>'; }).join("") +
+      '<rect x="24" y="410" width="312" height="52" rx="26" fill="#1f7a4d"/><text x="180" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="18" fill="#fff">Не знаєш напевно? Не поширюй</text></svg>';
+  }
+  function auditBlock() {
+    var sect = el("div", { class: "sect" });
+    sect.appendChild(el("h4", { text: "Розминка: дизайн-аудит" }));
+    sect.appendChild(el("p", { class: "subp", text: "На цьому плакаті сім помилок дизайну. Клікай на ділянки, які здаються тобі невдалими. Знайди щонайменше п’ять." }));
+    var wrap = el("div", { class: "audit" }), left = el("div"), right = el("div");
+    var msg = el("p", { class: "auditmsg", role: "status" }), counter = el("p", { class: "auditcount" }), list = el("ul", { class: "flaws" });
+    left.innerHTML = posterSvg();
+    var svg = left.querySelector("svg");
+    function refresh() {
+      counter.textContent = "Знайдено помилок: " + st.audit.found.length + " з 7";
+      list.innerHTML = "";
+      FLAWS.forEach(function (f, k) { var on = st.audit.found.indexOf(k) >= 0; list.appendChild(el("li", { class: on ? "on" : "" }, on ? [el("b", { text: "✓ " + f.t }), el("span", { text: f.d })] : [el("b", { text: (k + 1) + ". Ще не знайдено" })])); });
+      [].forEach.call(svg.querySelectorAll(".hot"), function (h) { if (st.audit.found.indexOf(+h.dataset.i) >= 0) h.classList.add("found"); });
+    }
+    function hit(i) {
+      if (st.audit.found.indexOf(i) >= 0) { msg.textContent = "Цю помилку вже знайдено."; return; }
+      st.audit.found.push(i); persist(); msg.textContent = "Є! " + FLAWS[i].t + "."; refresh();
+    }
+    svg.addEventListener("click", function (e) { var t = e.target; if (t.classList && t.classList.contains("hot")) hit(+t.dataset.i); else { st.audit.miss++; msg.textContent = "Тут усе гаразд. Пошукай деінде."; persist(); } });
+    svg.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("hot")) { e.preventDefault(); hit(+e.target.dataset.i); } });
+    var good = el("div", { style: "display:none" }); good.innerHTML = goodPosterSvg();
+    var show = el("button", { class: "btn small", type: "button", text: "Показати всі помилки", onclick: function () { [].forEach.call(svg.querySelectorAll(".hot"), function (h) { h.classList.add("shown"); }); msg.textContent = "Помилки підсвічено. Тепер дізнайся, чому кожна з них — помилка, клікнувши на неї."; } });
+    var sample = el("button", { class: "btn small", type: "button", text: "Показати виправлений плакат", onclick: function () { var on = good.style.display === "none"; good.style.display = on ? "block" : "none"; left.querySelector("svg").style.display = on ? "none" : "block"; sample.textContent = on ? "Повернутись до плаката з помилками" : "Показати виправлений плакат"; } });
+    right.appendChild(counter); right.appendChild(msg); right.appendChild(list);
+    right.appendChild(el("div", { style: "display:flex;gap:8px;flex-wrap:wrap;margin-top:10px" }, [show, sample]));
+    left.appendChild(good); wrap.appendChild(left); wrap.appendChild(right); sect.appendChild(wrap); refresh();
+    return sect;
+  }
+  function canvaBlock() {
+    var sect = el("div", { class: "sect" }), f = fmtById(vals("s2").format);
+    sect.appendChild(el("h4", { text: "Як створити макет у Canva" }));
+    sect.appendChild(el("p", { class: "subp", text: f ? "Твій формат: " + f.name + ". Тип дизайну в Canva: " + f.canva + "." : "Спершу обери формат на етапі 2: тут з’явиться тип дизайну в Canva." }));
+    var ol = el("ol", { class: "how" });
+    ["Відкрий canva.com і увійди так, як сказав учитель.",
+     "Натисни «Створити» (Create design) і знайди потрібний тип дизайну. Обери порожній макет або шаблон без значка корони.",
+     "Встав свій текст зі «Зміст»: заголовок, поради, заклик. Головну думку роби найбільшою.",
+     "Додай зображення й елементи з вкладок «Елементи» чи «Фото» тільки без значка корони. Якщо це зображення ШІ, обов’язково познач це.",
+     "Налаштуй шрифти й кольори: не більше двох шрифтів і трьох кольорів. Виділи кілька елементів і скористайся вирівнюванням (Position / Align) та напрямними.",
+     "Пройдися чеклістом нижче й виправ усе, що не відповідає.",
+     "Не закривай вкладку без потреби: Canva зберігає дизайн автоматично, але перевір, що він з’явився в розділі «Ваші проєкти»."].forEach(function (t) { ol.appendChild(el("li", { text: t })); });
+    sect.appendChild(ol);
+    sect.appendChild(el("p", { class: "note", text: "Canva може працювати англійською: «Share» — «Поділитися», «Download» — «Завантажити», «Elements» — «Елементи»." }));
+    sect.appendChild(el("p", null, [el("a", { class: "btn small", href: "https://www.canva.com/", target: "_blank", rel: "noopener noreferrer", text: "Відкрити Canva" })]));
+    return sect;
+  }
+  function neighborBlock() {
+    var sect = el("div", { class: "sect" });
+    sect.appendChild(el("h4", { text: "Як провести тест сусіда" }));
+    var ol = el("ol", { class: "how" });
+    ["Покажи свій макет сусідові рівно на 10 секунд (натисни таймер).", "Коли час вийде, сусід відвертається від екрана. Не підказуй і не пояснюй.", "Запитай: «Про що це?», «Що треба зробити?», «Що було незрозуміло?». Запиши відповіді в поля нижче.", "Внеси в Canva хоча б одну зміну за результатами тесту.", "Помініться ролями: тепер ти тестуєш сусіда."].forEach(function (t) { ol.appendChild(el("li", { text: t })); });
+    sect.appendChild(ol);
+    var big = el("div", { class: "big10", id: "big10", text: "10" }), msg = el("span", { class: "note", role: "status" }), run = null;
+    var go = el("button", { class: "btn primary", type: "button", text: "Запустити 10 секунд", onclick: function () {
+      if (run) return; var n = 10; big.textContent = String(n); msg.textContent = "Сусіде, дивись на екран!";
+      run = setInterval(function () { n--; big.textContent = String(Math.max(n, 0)); if (n <= 0) { clearInterval(run); run = null; msg.textContent = "Час! Сусіде, відверни екран і відповідай на запитання."; } }, 1000);
+    } });
+    sect.appendChild(el("div", { class: "sprint" }, [big, go, msg]));
+    return sect;
+  }
+  function finalBlock() {
+    var sect = el("div", { class: "sect" });
+    sect.appendChild(el("h4", { text: "Як зберегти й поділитися" }));
+    var ol = el("ol", { class: "how" });
+    ["Натисни кнопку «Поділитися» (Share) у верхньому правому куті редактора Canva.", "Обери «Завантажити» (Download), тип файлу PNG (для картинки) або PDF (для кількох сторінок), і натисни «Завантажити». Якщо файл не завантажується, перевір, чи немає в дизайні елементів із короною.", "У вікні «Поділитися» створи посилання лише для перегляду (view link: «Будь-хто з посиланням» і право «Перегляд»). Саме його встав у поле нижче.", "Перевір: попроси сусіда відкрити посилання. Якщо воно відкривається, усе гаразд."].forEach(function (t) { ol.appendChild(el("li", { text: t })); });
+    sect.appendChild(ol);
+    sect.appendChild(el("p", { class: "note", text: "Назви кнопок у Canva можуть трохи відрізнятися залежно від мови й версії. Головне: «Поділитися» → посилання «лише перегляд» та «Завантажити» → PNG або PDF." }));
+    return sect;
+  }
+  var EXTRA = { dice: diceBlock, xray: xrayBlock, audit: auditBlock, neighbor: neighborBlock, final: finalBlock };
+
+  function renderWork() {
+    var box = $("stwork"); box.innerHTML = ""; var s = findStage(st.stage);
+    var p = el("div", { class: "panel" });
+    p.appendChild(el("div", { class: "stagehead" }, [el("h3", { text: "Етап " + s.n + ". " + s.title }), stageTimer(s)]));
+    p.appendChild(el("div", { class: "stagetxt" }, [el("p", { text: s.text })]));
+    if (s.pre) p.appendChild(EXTRA[s.pre](s));
+    if (s.mid === "canva") p.appendChild(canvaBlock());
+    s.fields.forEach(function (f) { p.appendChild(fieldEl(s, f)); });
+    if (s.post) p.appendChild(EXTRA[s.post](s));
+    var cr = el("div", { class: "checkrow" });
+    cr.appendChild(el("button", { class: "btn primary", type: "button", text: "Перевірити етап", onclick: function () { runCheck(s); } }));
+    cr.appendChild(fbBox(s));
+    cr.appendChild(el("button", { class: "btn small retry", type: "button", text: "Почати цей етап спочатку", onclick: function () { resetStage(s); } }));
+    var idx = STAGES.indexOf(s), nxt = STAGES[idx + 1];
+    if (nxt && st.done[s.id]) cr.appendChild(el("p", null, [el("button", { class: "btn", type: "button", text: "Далі: " + nxt.title, onclick: function () { st.stage = nxt.id; persist(); renderList(); renderWork(); window.scrollTo({ top: document.querySelector("nav.tabs").offsetTop - 1 }); } })]));
+    if (st.done[s.id] && (!nxt || s.id === "s6")) cr.appendChild(el("p", null, [el("a", { class: "btn", href: "#passport", text: "До паспорта продукту" })]));
+    p.appendChild(cr); box.appendChild(p);
+  }
+  hooks.work = function () { renderList(); renderWork(); };
+
+  /* ======================= PASSPORT ======================= */
+  function fmtName(id) { var f = fmtById(id); return f ? f.name : ""; }
+  function selfTotal() { var t = 0; RUB.forEach(function (c) { t += st.self[c.id] || 0; }); return t; }
+  function selfDone() { return RUB.every(function (c) { return st.self[c.id]; }); }
+  function passportData() {
+    var a = vals("s1"), b = vals("s2"), c = vals("s3"), d = vals("s5"), e = vals("s6");
+    return [
+      ["Назва продукту", b.name], ["Формат", fmtName(b.format)], ["Для кого", a.audience], ["Проти якого фейку", a.kind],
+      ["Головна думка", b.message], ["Гасло", c.slogan], ["Поради", c.tips], ["Приклад і перевірка", c.example],
+      ["Інструменти", (c.tools || []).join(", ")], ["Заклик до дії", c.cta], ["Зображення й джерела", (c.marks || []).join("; ")],
+      ["Мій виклик", st.challenge],
+      ["Тест сусіда", d.clarity ? "Оцінка зрозумілості: " + d.clarity + " з 5. " + (d.match || "") + ". Що змінено: " + (d.change || "—") : ""],
+      ["Посилання на Canva", e.link]
+    ];
+  }
+  function renderPassport() {
+    var box = $("passport"); box.innerHTML = "";
+    var core = STAGES.filter(function (s) { return !s.bonus; }), n = core.filter(function (s) { return st.done[s.id]; }).length;
+    box.appendChild(el("h2", { text: "Паспорт продукту проти фейків" }));
+    box.appendChild(el("p", { class: "by", text: "Автор: " + (st.name || "— впиши прізвище та ім’я на початку сторінки —") + ". Виконано етапів: " + n + " з " + core.length + "." }));
+    var dl = el("dl");
+    passportData().forEach(function (r) { dl.appendChild(el("dt", { text: r[0] })); dl.appendChild(el("dd", { class: r[1] ? "" : "empty", text: r[1] || "ще не заповнено" })); });
+    dl.appendChild(el("dt", { text: "Самооцінка" })); dl.appendChild(el("dd", { class: selfDone() ? "" : "empty", text: selfDone() ? selfTotal() + " з 12" : "ще не заповнено" }));
+    box.appendChild(dl);
+    if (n === core.length) box.appendChild(el("div", { class: "stampbox", text: "ГОТОВО" }));
+  }
+  function passportText() {
+    var out = ["Паспорт продукту проти фейків", "Автор: " + (st.name || "—")];
+    passportData().forEach(function (r) { out.push(r[0] + ": " + (r[1] || "—")); });
+    out.push("Самооцінка: " + (selfDone() ? selfTotal() + " з 12" : "—"));
+    return out.join("\n");
+  }
+  $("copyPass").addEventListener("click", function () {
+    var txt = passportText(), ok = false, m = $("copymsg");
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt); ok = true; } } catch (e) {}
+    if (!ok) { try { var ta = el("textarea", { value: txt }); document.body.appendChild(ta); ta.select(); ok = document.execCommand("copy"); ta.remove(); } catch (e) {} }
+    m.textContent = ok ? "Скопійовано." : "Не вдалося скопіювати. Зроби знімок екрана."; setTimeout(function () { m.textContent = ""; }, 2500);
+  });
+  $("printPass").addEventListener("click", function () { try { window.print(); } catch (e) {} });
+
+  var RUB = [
+    { id: "c1", title: "Зміст і відповідальність", lv: [[3, "Упевнено", "Поради правильні й пов’язані з уроками 19–20. Є приклад, джерела або позначки, немає особистих даних."], [2, "Частково", "Поради здебільшого правильні, але інструментів чи прикладу мало, або джерела не вказано."], [1, "Поки ні", "Поради загальні чи неточні, немає прикладу або джерел."]], fix: "s3" },
+    { id: "c2", title: "Зрозумілість для аудиторії", lv: [[3, "Упевнено", "Головну думку розуміють за 10 секунд, мова й приклади підходять аудиторії, тест сусіда пройдено."], [2, "Частково", "Думка зрозуміла, але є зайвий текст чи складний термін."], [1, "Поки ні", "Сусід не зміг назвати головну думку."]], fix: "s5" },
+    { id: "c3", title: "Дизайн і оформлення", lv: [[3, "Упевнено", "Контраст, не більше двох шрифтів і трьох кольорів, вирівнювання, акцент на головному, чіткі зображення."], [2, "Частково", "Є один-два недоліки (наприклад, забагато тексту чи кольорів)."], [1, "Поки ні", "Макет перевантажений, важко читати."]], fix: "s4" },
+    { id: "c4", title: "Корисність і дія", lv: [[3, "Упевнено", "Є чіткий заклик і практичні кроки. Після тесту сусіда внесено зміну."], [2, "Частково", "Заклик є, але кроки загальні або змін після тесту не внесено."], [1, "Поки ні", "Немає заклику до дії."]], fix: "s3" }
+  ];
+  function renderSelf() {
+    var box = $("selfbox"); box.innerHTML = "";
+    RUB.forEach(function (c) {
+      var row = el("div", { class: "rub" }); row.appendChild(el("h4", { text: c.title }));
+      var lv = el("div", { class: "lv", role: "group", "aria-label": c.title });
+      c.lv.forEach(function (l) { lv.appendChild(el("button", { type: "button", "aria-pressed": String(st.self[c.id] === l[0]), onclick: function () { st.self[c.id] = l[0]; persist(); renderSelf(); renderPassport(); } }, [el("b", { text: l[1] + " (" + l[0] + " б.)" }), document.createTextNode(l[2])])); });
+      row.appendChild(lv); box.appendChild(row);
+    });
+    var out = $("selfout"); out.innerHTML = "";
+    if (!selfDone()) { out.className = "feedback"; return; }
+    var t = selfTotal(), msg = t >= 11 ? "Дуже сильна робота." : t >= 8 ? "Добра робота, лишилося кілька речей, які можна покращити." : "Є над чим працювати. Поверни до етапів і доопрацюй продукт.";
+    out.className = "feedback ok"; out.textContent = "Твоя самооцінка: " + t + " з 12. " + msg;
+    var weak = RUB.filter(function (c) { return st.self[c.id] === 1; });
+    if (weak.length) { var ul = el("ul", { class: "weak" }); weak.forEach(function (c) { ul.appendChild(el("li", null, [c.title + " — ", el("a", { href: "#work", text: "доопрацювати", onclick: function () { st.stage = c.fix; persist(); } })])); }); out.appendChild(el("div", { text: "Що підтягнути:" })); out.appendChild(ul); }
+  }
+  function planParagraph() {
+    var a = vals("s1"), b = vals("s2"), c = vals("s3");
+    var t = "Мій продукт називається " + (b.name ? "«" + b.name + "»" : "…") + ". Він для аудиторії: " + (a.audience ? a.audience.toLowerCase() : "…") + ". ";
+    t += "Він допомагає проти такого виду фейків: " + (a.kind ? a.kind.toLowerCase() : "…") + ". ";
+    t += "Головна думка: " + (b.message || "…") + ". Я зробив(-ла) його у форматі «" + (fmtName(b.format) || "…") + "»";
+    t += (c.cta ? ", а закликаю читачів так: «" + c.cta + "»." : ".");
+    return t;
+  }
+  function renderPlan() {
+    var box = $("plan"); box.innerHTML = "";
+    var ol = el("ol", { class: "planlist" });
+    ol.appendChild(el("li", null, [el("b", { text: "Про що продукт. " }), el("span", { text: planParagraph() }), el("div", { class: "note", text: "Цей текст складається сам із твоїх записів." })]));
+    ol.appendChild(el("li", null, [el("label", { for: "plan-best", text: "Що вийшло найкраще?" }), el("textarea", { id: "plan-best", rows: "2", placeholder: "Наприклад: простий заголовок і чіткий заклик." })]));
+    ol.appendChild(el("li", null, [el("label", { for: "plan-improve", text: "Що б я покращив(-ла)?" }), el("textarea", { id: "plan-improve", rows: "2", placeholder: "Наприклад: зменшив(-ла) б кількість тексту." })]));
+    box.appendChild(ol);
+    $("plan-best").value = st.plan.best || ""; $("plan-improve").value = st.plan.improve || "";
+    $("plan-best").addEventListener("input", function (e) { st.plan.best = e.target.value; persist(); });
+    $("plan-improve").addEventListener("input", function (e) { st.plan.improve = e.target.value; persist(); });
+  }
+  hooks.passport = function () { renderPassport(); renderSelf(); renderPlan(); };
+
+  /* ======================= START: formats ======================= */
+  (function () {
+    var box = $("fmtview");
+    FORMATS.forEach(function (f) { box.appendChild(el("div", { class: "fcard" }, [el("h3", { text: f.name }), el("p", { text: f.size }), el("p", null, [el("span", { class: "tag", text: "Canva: " + f.canva }), document.createTextNode(" "), el("span", { class: "tag", text: "складність: " + f.lvl })])])); });
+  })();
+
+  renderList(); renderWork();
+  route();
+})();
+</script>
+</body>
+</html>
